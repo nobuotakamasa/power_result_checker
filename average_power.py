@@ -97,16 +97,12 @@ def signal_handler(sig, frame):
 # SIGINT（Ctrl-C）のシグナルをキャッチするように設定
 signal.signal(signal.SIGINT, signal_handler)
 
-first = True
 def init_timer():
-    global first
     global start_time
-    global node
-    if first:
-        first = False
+    if start_time is None:
         start_time = node.get_clock().now()
         seconds, nanoseconds = start_time.seconds_nanoseconds()
-        print(f"ros time start:{seconds}.{nanoseconds}")    
+        print(f"ros time start:{seconds}.{nanoseconds}")
 
 def diagnostics_callback(msg):
     init_timer()
