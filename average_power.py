@@ -86,10 +86,10 @@ def signal_handler(sig, frame):
     print_powers_builtin2()
     print("============ unix time ===========")
     seconds, nanoseconds = start_time.seconds_nanoseconds()
-    print(f"ros time start:{seconds}.{nanoseconds}")    
+    print(f"ros time start:{seconds}.{nanoseconds}")
     current_time = node.get_clock().now()
     seconds, nanoseconds = current_time.seconds_nanoseconds()
-    print(f"ros time end  :{seconds}.{nanoseconds}")    
+    print(f"ros time end  :{seconds}.{nanoseconds}")
     print("==================================")
 
     sys.exit(0)  # 正常終了
@@ -102,13 +102,13 @@ def init_timer():
     if start_time is None:
         start_time = node.get_clock().now()
         seconds, nanoseconds = start_time.seconds_nanoseconds()
-        print(f"ros time start:{seconds}.{nanoseconds}")
+        print(f"ros time first call back:{seconds}.{nanoseconds}")
 
 def diagnostics_callback(msg):
     init_timer()
     for status in msg.status:
         if statusname in status.name:
-            if diagnostics.get(status.hardware_id) == None:
+            if diagnostics.get(status.hardware_id) is None:
                 diagnostics[status.hardware_id] = [0, {}]
                 for value in status.values:
                     diagnostics[status.hardware_id][1][value.key] = 0.0
@@ -142,7 +142,7 @@ def callback_topic_array(name, msg):
     init_timer()
     print(name, msg.data)
     length = len(msg.data)
-    if topic_arrays.get(name) == None:
+    if topic_arrays.get(name) is None:
         topic_arrays[name] = [0, [0.0] * length]
     #topic_arrays[name].append(msg.data)
     topic_arrays[name][0] += 1
@@ -152,7 +152,7 @@ def callback_topic_array(name, msg):
 def callback_topic_value(name, msg):
     init_timer()
     print(name, msg.data)
-    if topic_values.get(name) == None:
+    if topic_values.get(name) is None:
         topic_values[name] = [0,0.0]
     topic_values[name][0] += 1
     topic_values[name][1] += msg.data
