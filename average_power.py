@@ -33,7 +33,7 @@ print(params["cpu_inner"]["array"])
 print("diagnostics")
 statusname = params["diagnostics"]["statusname"]
 print(statusname)
-
+node = None
 diagnostics = {}
 #diagnostics_count = {}
 def print_diagnostics():
@@ -72,6 +72,7 @@ def print_powers_builtin2():
             array[i] /= num
         print(f"{value_name} {array}")
 
+start_time = None
 # Ctrl-Cが押されたときのハンドラ
 def signal_handler(sig, frame):
     print("======   printing averaged results   ======")
@@ -83,13 +84,32 @@ def signal_handler(sig, frame):
     print_powers_builtin1()
     print("======     built in 2       ======")
     print_powers_builtin2()
+    print("============ unix time ===========")
+    seconds, nanoseconds = start_time.seconds_nanoseconds()
+    print(f"ros time start:{seconds}.{nanoseconds}")    
+    current_time = node.get_clock().now()
+    seconds, nanoseconds = current_time.seconds_nanoseconds()
+    print(f"ros time end  :{seconds}.{nanoseconds}")    
     print("==================================")
+
     sys.exit(0)  # 正常終了
 
 # SIGINT（Ctrl-C）のシグナルをキャッチするように設定
 signal.signal(signal.SIGINT, signal_handler)
 
+first = True
+def init_timer():
+    global first
+    global start_time
+    global node
+    if first:
+        first = False
+        start_time = node.get_clock().now()
+        seconds, nanoseconds = start_time.seconds_nanoseconds()
+        print(f"ros time start:{seconds}.{nanoseconds}")    
+
 def diagnostics_callback(msg):
+    init_timer()
     for status in msg.status:
         if statusname in status.name:
             if diagnostics.get(status.hardware_id) == None:
@@ -104,11 +124,13 @@ voltages = [0.0,0.0]
 #[count, [1.2, 1.3, 1.4,....]]
 powers = [0, [0.0] * len(sensor_connections)]
 def callback_voltage(msg):
+    init_timer()
     global voltages
     voltages = msg.data
     #print(msg.params)
 
 def callback_current(msg):
+    init_timer()
     #global currents
     global powers_count
     currents = msg.data
@@ -121,6 +143,7 @@ def callback_current(msg):
         powers[1][i] += power[i]
 
 def callback_topic_array(name, msg):
+    init_timer()
     print(name, msg.data)
     length = len(msg.data)
     if topic_arrays.get(name) == None:
@@ -131,6 +154,7 @@ def callback_topic_array(name, msg):
         topic_arrays[name][1][i] += msg.data[i]
 
 def callback_topic_value(name, msg):
+    init_timer()
     print(name, msg.data)
     if topic_values.get(name) == None:
         topic_values[name] = [0,0.0]
@@ -141,6 +165,7 @@ def main(args=None):
     rclpy.init(args=args)
 
     # Create a node instance
+    global node
     node = Node('array_average')
     subscriptions = []
     #collecting dignostics
