@@ -1,0 +1,39 @@
+cpu_inner:
+  value:
+    - "/ecu/autowareecu/gpu"
+  array:
+    - "/ecu/RQX5801"
+    - "/ecu/RQX5804"
+    - "/ecu/RQX5802"
+    - "/ecu/RQX5803"
+
+diagnostics:
+  statusname: "power_consumption_monitor"
+
+sensor_input:
+  voltage: "/ecu/voltages/values"
+  current: "/ecu/currents/values"
+  connection:
+    - 1
+    - 1
+    - 1
+    - 1
+    - 1
+    - 1
+    - 0
+    - 1
+    - 1
+  name:
+    - "bat1(12V)"
+    - "bat2(12V)"
+    - "RosCube ECU3(TLR)"
+    - "RosCube ECU2"
+    - "RosCube ECU1"
+    - "RosCube ECU0"
+    - "AW ECU"
+    - "Logging ECU"
+    - "MS ECU"
+
+
+
+
